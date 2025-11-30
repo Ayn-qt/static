@@ -1,5 +1,5 @@
 # ============================================================
-#                       CAESAR CIPHER
+#                   1)    CAESAR CIPHER
 #          Encryption + Decryption + User Choice (e/d)
 # ============================================================
 
@@ -35,7 +35,7 @@ else:
 
 
 # ============================================================
-#                  RAIL FENCE CIPHER (FULL)
+#                 2) RAIL FENCE CIPHER (FULL)
 #          Encryption + Decryption + User Interaction
 # ============================================================
 
@@ -43,11 +43,9 @@ def encrypt_rail_fence(text, rails):
     rail_matrix = [['\n' for _ in range(len(text))] for _ in range(rails)]
     down = False
     row, col = 0, 0
-
     for char in text:
         if row == 0 or row == rails - 1:
             down = not down
-
         rail_matrix[row][col] = char
         col += 1
         row += 1 if down else -1
@@ -56,10 +54,7 @@ def encrypt_rail_fence(text, rails):
         for c in r:
             if c != '\n':
                 result.append(c)
-
     return "".join(result)
-
-
 def decrypt_rail_fence(cipher, rails):
     rail_matrix = [['\n' for _ in range(len(cipher))] for _ in range(rails)]
     down = None
@@ -78,7 +73,7 @@ def decrypt_rail_fence(cipher, rails):
             if rail_matrix[i][j] == '*' and index < len(cipher):
                 rail_matrix[i][j] = cipher[index]
                 index += 1
-                
+         
     result = []
     row, col = 0, 0
     for _ in range(len(cipher)):
@@ -86,21 +81,15 @@ def decrypt_rail_fence(cipher, rails):
             down = True
         if row == rails - 1:
             down = False
-
         if rail_matrix[row][col] != '\n' and rail_matrix[row][col] != '*':
             result.append(rail_matrix[row][col])
-
         col += 1
         row += 1 if down else -1
-
     return "".join(result)
-
 print("===== RAIL FENCE CIPHER =====")
 msg = input("Enter message: ")
 rails = int(input("Enter number of rails: "))
-
 choice = input("Encrypt or Decrypt? (e/d): ").lower()
-
 if choice == "e":
     print("\nEncrypted:", encrypt_rail_fence(msg, rails))
 else:
@@ -124,7 +113,7 @@ else:
 
 
 # ============================================================
-#                     PLAYFAIR CIPHER (FULL)
+#                    3) PLAYFAIR CIPHER (FULL)
 #                Encryption + Decryption + Input
 # ============================================================
 
@@ -132,18 +121,15 @@ else:
 def generate_key_matrix(key):
     key = key.upper().replace('J', 'I')
     used = []
-
     for char in key:
         if char.isalpha() and char not in used:
             used.append(char)
-
     for char in "ABCDEFGHIKLMNOPQRSTUVWXYZ":
         if char not in used:
             used.append(char)
 
     matrix = [used[i:i+5] for i in range(0, 25, 5)]
     return matrix
-
 def find_coords(matrix, char):
     char = char.upper().replace('J', 'I')
     for r in range(5):
@@ -151,12 +137,10 @@ def find_coords(matrix, char):
             if matrix[r][c] == char:
                 return r, c
     return None, None
-
 def prepare_text(text):
     text = text.upper().replace(" ", "").replace('J', 'I')
     result = ""
     i = 0
-
     while i < len(text):
         a = text[i]
         b = text[i + 1] if i + 1 < len(text) else 'X'
@@ -193,10 +177,7 @@ def playfair(text, key, mode):
         else:
             result += matrix[r1][c2]
             result += matrix[r2][c1]
-
     return result
-
-
 # Remove padding 'X'
 def clean_playfair_output(text):
     cleaned = ""
@@ -212,23 +193,15 @@ def clean_playfair_output(text):
         else:
             cleaned += text[i]
             i += 1
-
     if cleaned.endswith("X"):
         cleaned = cleaned[:-1]
-
     return cleaned
-
 print("===== PLAYFAIR CIPHER =====")
 key = input("Enter keyword: ")
 text = input("Enter text: ")
-
 mode = input("Encrypt or Decrypt? (e/d): ").lower()
 mode = 'encrypt' if mode == 'e' else 'decrypt'
-
 output = playfair(text, key, mode)
-
 if mode == "decrypt":
     output = clean_playfair_output(output)
-
 print("\nResult:", output)
-
