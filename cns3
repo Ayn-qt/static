@@ -1,0 +1,233 @@
+# =============================================================
+# LAB 1A – CAESAR CIPHER
+# =============================================================
+
+def caesar_cipher(text, shift):
+    result = ""
+    for char in text:
+        if char.isupper():
+            result += chr((ord(char) - 65 + shift) % 26 + 65)
+        elif char.islower():
+            result += chr((ord(char) - 97 + shift) % 26 + 97)
+        else:
+            result += char
+    return result
+print("\n===== CAESAR CIPHER =====")
+text = input("Enter text: ")
+shift = int(input("Enter shift value: "))
+mode = input("Encrypt or Decrypt? (e/d): ").lower()
+if mode == "e":
+    print("Encrypted:", caesar_cipher(text, shift))
+else:
+    print("Decrypted:", caesar_cipher(text, -shift))
+
+
+
+
+
+
+# =============================================================
+# LAB 1B – MONOALPHABETIC CIPHER
+# (No imports in PDF)
+# =============================================================
+
+ALPH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+KEY = "QWERTYUIOPASDFGHJKLZXCVBNM"
+
+enc_map = {ALPH[i]: KEY[i] for i in range(26)}
+dec_map = {KEY[i]: ALPH[i] for i in range(26)}
+
+def mono_encrypt(msg):
+    return ''.join(enc_map.get(c, c) for c in msg.upper())
+
+def mono_decrypt(msg):
+    return ''.join(dec_map.get(c, c) for c in msg.upper())
+
+print("\n===== MONOALPHABETIC CIPHER =====")
+text = input("Enter text: ")
+mode = input("Encrypt or Decrypt? (e/d): ").lower()
+
+if mode == "e":
+    print("Encrypted:", mono_encrypt(text))
+else:
+    print("Decrypted:", mono_decrypt(text))
+
+
+
+
+
+
+# =============================================================
+# LAB 1C – VIGENERE CIPHER
+# (No imports in PDF)
+# =============================================================
+
+ALPH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+def vig_encrypt(text, key):
+    text, key = text.upper(), key.upper()
+    res = ""
+    k = 0
+    for c in text:
+        if c.isalpha():
+            shift = ALPH.index(key[k % len(key)])
+            res += ALPH[(ALPH.index(c) + shift) % 26]
+            k += 1
+        else:
+            res += c
+    return res
+def vig_decrypt(text, key):
+    text, key = text.upper(), key.upper()
+    res = ""
+    k = 0
+    for c in text:
+        if c.isalpha():
+            shift = ALPH.index(key[k % len(key)])
+            res += ALPH[(ALPH.index(c) - shift) % 26]
+            k += 1
+        else:
+            res += c
+    return res
+print("\n===== VIGENERE CIPHER =====")
+txt = input("Enter text: ")
+key = input("Enter key: ")
+mode = input("Encrypt or Decrypt? (e/d): ").lower()
+if mode == "e":
+    print("Encrypted:", vig_encrypt(txt, key))
+else:
+    print("Decrypted:", vig_decrypt(txt, key))
+
+
+
+
+
+
+# =============================================================
+# LAB 1D – COLUMNAR TRANSPOSITION CIPHER
+# (No imports in PDF)
+# =============================================================
+
+def col_encrypt(pt, key):
+    pt = pt.replace(" ", "").upper()
+    k = len(key)
+    order = sorted(range(k), key=lambda i: key[i])
+    cols = [""] * k
+    for i, ch in enumerate(pt):
+        cols[i % k] += ch
+    return ''.join(cols[i] for i in order)
+def col_decrypt(ct, key):
+    k = len(key)
+    order = sorted(range(k), key=lambda i: key[i])
+    n = len(ct)
+    lengths = [n // k] * k
+    for i in range(n % k):
+        lengths[i] += 1
+    parts = {}
+    idx = 0
+    for i, ln in zip(order, lengths):
+        parts[i] = ct[idx:idx + ln]
+        idx += ln
+    pt = ""
+    for i in range(max(lengths)):
+        for c in range(k):
+            if i < len(parts[c]):
+                pt += parts[c][i]
+    return pt
+print("\n===== COLUMNAR TRANSPOSITION =====")
+msg = input("Enter message: ")
+key = input("Enter key: ")
+mode = input("Encrypt or Decrypt? (e/d): ")
+if mode == "e":
+    print("Encrypted:", col_encrypt(msg, key))
+else:
+    print("Decrypted:", col_decrypt(col_encrypt(msg, key), key))
+
+
+
+
+
+
+
+# ===========================================================
+# LAB 2 – DES
+# =============================================================
+!pip install pycryptodome
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+print("\n===== DES CIPHER =====")
+key = b"abcdefgh"
+plaintext = input("Enter message: ").encode()
+cipher = DES.new(key, DES.MODE_ECB)
+ct = cipher.encrypt(pad(plaintext, DES.block_size))
+print("Encrypted:", ct)
+decipher = DES.new(key, DES.MODE_ECB)
+pt = unpad(decipher.decrypt(ct), DES.block_size)
+print("Decrypted:", pt.decode())
+
+
+# =============================================================
+# LAB 2 – AES
+# =============================================================
+
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad as aes_pad, unpad as aes_unpad
+import base64
+print("\n===== AES CIPHER =====")
+key = get_random_bytes(16)
+iv = get_random_bytes(16)
+msg = input("Enter message: ").encode()
+cipher = AES.new(key, AES.MODE_CBC, iv)
+ct = cipher.encrypt(aes_pad(msg, AES.block_size))
+print("Encrypted:", ct)
+dec = AES.new(key, AES.MODE_CBC, iv)
+pt = aes_unpad(dec.decrypt(ct), AES.block_size)
+print("Decrypted:", pt.decode())
+
+
+
+
+
+
+# =============================================================
+# LAB 3 – RSA
+# =============================================================
+
+import random
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+def is_prime(n):
+    if n <= 1: return False
+    if n <= 3: return True
+    if n % 2 == 0 or n % 3 == 0: return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+def modinv(e, phi):
+    for d in range(2, phi):
+        if (d * e) % phi == 1:
+            return d
+    return None
+print("\n===== RSA ALGORITHM =====")
+p = int(input("Enter prime p: "))
+q = int(input("Enter prime q: "))
+msg = input("Enter message: ")
+if not is_prime(p) or not is_prime(q):
+    print("Both numbers must be prime!")
+else:
+    n = p * q
+    phi = (p - 1) * (q - 1)
+    e = 2
+    while gcd(e, phi) != 1:
+        e += 1
+    d = modinv(e, phi)
+    enc = [pow(ord(c), e, n) for c in msg]
+    dec = ''.join(chr(pow(c, d, n)) for c in enc)
+    print("Encrypted:", enc)
+    print("Decrypted:", dec)
+
+
