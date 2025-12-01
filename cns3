@@ -189,45 +189,31 @@ print("Decrypted:", pt.decode())
 
 
 # =============================================================
-# LAB 3 – RSA
+# LAB3 – RSA 
 # =============================================================
 
-import random
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
-def is_prime(n):
-    if n <= 1: return False
-    if n <= 3: return True
-    if n % 2 == 0 or n % 3 == 0: return False
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
-            return False
-        i += 6
-    return True
-def modinv(e, phi):
-    for d in range(2, phi):
-        if (d * e) % phi == 1:
-            return d
-    return None
-print("\n===== RSA ALGORITHM =====")
-p = int(input("Enter prime p: "))
-q = int(input("Enter prime q: "))
-msg = input("Enter message: ")
-if not is_prime(p) or not is_prime(q):
-    print("Both numbers must be prime!")
-else:
-    n = p * q
-    phi = (p - 1) * (q - 1)
-    e = 2
-    while gcd(e, phi) != 1:
-        e += 1
-    d = modinv(e, phi)
-    enc = [pow(ord(c), e, n) for c in msg]
-    dec = ''.join(chr(pow(c, d, n)) for c in enc)
-    print("Encrypted:", enc)
-    print("Decrypted:", dec)
-
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+import base64
+def generate_rsa(bits: int = 2048):
+    key = RSA.generate(bits)
+    return key.export_key(), key.publickey().export_key()
+def rsa_encrypt(pub_pem: bytes, message: bytes) -> str:
+    pub = RSA.import_key(pub_pem)
+    cipher = PKCS1_OAEP.new(pub)
+    ct = cipher.encrypt(message)
+    return base64.b64encode(ct).decode()
+def rsa_decrypt(priv_pem: bytes, b64_ct: str) -> bytes:
+    priv = RSA.import_key(priv_pem)
+    cipher = PKCS1_OAEP.new(priv)
+    ct = base64.b64decode(b64_ct)
+    return cipher.decrypt(ct)
+if __name__ == "__main__":
+    priv_pem, pub_pem = generate_rsa(2048)
+    print("Generated keys (PEM lengths):", len(priv_pem), len(pub_pem))
+    msg = input("\nEnter message to encrypt: ").encode()
+    ct = rsa_encrypt(pub_pem, msg)
+    print("\nCiphertext (base64):", ct)
+    pt = rsa_decrypt(priv_pem, ct)
+    print("Decrypted:", pt)
 
