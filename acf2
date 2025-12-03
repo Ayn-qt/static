@@ -1,0 +1,167 @@
+-------------------------
+            LAB 1
+     (Network Scanning)
+-------------------------
+nmap -sn 10.10.x.x
+nmap -sS 10.10.x.x
+nmap -sV 10.10.x.x
+nmap -O 10.10.x.x
+nmap -p- 10.10.x.x
+nmap -A 10.10.x.x
+
+
+
+-------------------------
+            LAB 3
+       (IDS - Suricata)
+-------------------------
+sudo suricata -i eth0
+tail -f /var/log/suricata/fast.log
+
+
+
+-------------------------
+            LAB 4
+      (Firewall - UFW)
+-------------------------
+sudo ufw enable
+sudo ufw allow ssh
+sudo ufw deny 80
+sudo ufw status numbered
+sudo ufw delete <number>
+
+
+
+-------------------------
+            LAB 6
+   (Social Engineering Toolkit)
+-------------------------
+sudo setoolkit
+# → Social-Engineering Attacks
+# → Website Attack Vectors
+# → Credential Harvester
+# → Enter attacker IP + website URL
+
+
+
+-------------------------
+            LAB 7
+       (Autopsy Forensics)
+-------------------------
+1. Create New Case
+2. Add Data Source → Disk Image (.E01/.dd)
+3. Select image file
+4. Configure Ingest → Select All (except Plaso)
+5. Analyze findings:
+   - OS Accounts
+   - Browser History
+   - Recent Activity
+   - Deleted Files
+   - Hash Values
+6. Export evidence (optional)
+7. Generate Report (optional)
+
+
+
+-------------------------
+            LAB 1
+     (Network Scanning)
+-------------------------
+nmap -sn 10.10.x.x
+nmap -sS 10.10.x.x
+nmap -sV 10.10.x.x
+nmap -O 10.10.x.x
+nmap -p- 10.10.x.x
+nmap -A 10.10.x.x
+
+
+
+-------------------------
+            LAB 3
+       (IDS - Suricata)
+-------------------------
+sudo suricata -i eth0
+tail -f /var/log/suricata/fast.log
+
+
+
+-------------------------
+            LAB 4
+      (Firewall - UFW)
+-------------------------
+sudo ufw enable
+sudo ufw allow ssh
+sudo ufw deny 80
+sudo ufw status numbered
+sudo ufw delete <number>
+
+
+
+-------------------------
+            LAB 6
+   (Social Engineering Toolkit)
+-------------------------
+sudo setoolkit
+# → Social-Engineering Attacks
+# → Website Attack Vectors
+# → Credential Harvester
+# → Enter attacker IP + website URL
+
+
+
+-------------------------
+            LAB 7
+       (Autopsy Forensics)
+-------------------------
+1. Create New Case
+2. Add Data Source → Disk Image (.E01 / .dd)
+3. Select evidence image file
+4. Configure Ingest → Select All (except Plaso)
+5. Analyze:
+   - OS Accounts
+   - Web History
+   - Recent Activity
+   - Deleted Files
+   - Hash Values
+6. Export Evidence (optional)
+7. Generate Report (optional)
+
+
+
+-------------------------
+            LAB 8
+      (DVWA – Web Attacks)
+-------------------------
+# --- Setup DVWA using Docker ---
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo docker run --rm -it -p 80:80 vulnerables/web-dvwa
+# Open browser → http://localhost
+# Login → admin / password
+# Set DVWA Security Level → LOW
+
+# --- Scenario 1: SQL Injection ---
+' OR '1'='1
+
+# --- Scenario 2: Reflected XSS ---
+<script>alert('XSS - Yash')</script>
+
+# --- Scenario 3: Command Injection ---
+Payloads:
+127.0.0.1; whoami
+127.0.0.1 && id
+
+# --- Scenario 4: File Upload Vulnerability ---
+Create file:
+test_phpinfo.php:
+<?php phpinfo(); ?>
+Upload on DVWA → File Upload
+Open uploaded file link → phpinfo() shown
+# Vulnerability: Insecure File Upload
+# Risk: High (can lead to RCE)
+
+
+# --- Scenario 5: Stored XSS ---
+Inspect → Change maxlength="50" → "10000"
+<script>document.body.append('XSS_STORED_YASH');</script>
+
